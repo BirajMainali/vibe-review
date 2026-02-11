@@ -54,7 +54,7 @@ async function selectExportDir() {
 <template>
   <div class="p-8 max-w-2xl mx-auto">
     <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-1">Settings</h1>
-    <p class="text-sm text-gray-500 dark:text-gray-400 mb-8">Configure your code review preferences</p>
+    <p class="text-sm text-gray-500 dark:text-gray-400 mb-8">Configure your Vibe Review preferences</p>
 
     <!-- Theme -->
     <section class="mb-8">

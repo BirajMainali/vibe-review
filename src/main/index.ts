@@ -15,7 +15,7 @@ function createWindow(): void {
     minWidth: 1000,
     minHeight: 700,
     show: false,
-    title: 'Code Review',
+    title: 'Vibe Review',
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false
@@ -39,7 +39,7 @@ function createWindow(): void {
 }
 
 app.whenReady().then(() => {
-  electronApp.setAppUserModelId('com.ai-code-review')
+  electronApp.setAppUserModelId('com.vibe-review')
 
   app.on('browser-window-created', (_, window) => {
     optimizer.watchWindowShortcuts(window)

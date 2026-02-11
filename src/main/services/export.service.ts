@@ -30,7 +30,7 @@ export function generateMarkdown(
     fileGroups[c.file_path].push(c)
   }
 
-  let md = `# Code Review: ${project.name}\n\n`
+  let md = `# Vibe Review: ${project.name}\n\n`
   md += `**Branch**: ${review.branch} | **Date**: ${dateStr} | **Reviewer**: Self-Review\n\n`
   md += `## Summary\n\n`
   md += `- **Total Comments**: ${comments.length}\n`

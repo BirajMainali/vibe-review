@@ -1,5 +1,5 @@
-appId: com.ai-code-review.app
-productName: AI Code Review
+appId: com.vibe-review.app
+productName: Vibe Review
 directories:
   buildResources: build
 files:

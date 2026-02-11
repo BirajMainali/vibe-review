@@ -107,7 +107,7 @@ function getSeverityCounts(comments: any[]) {
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
       </svg>
       <h3 class="text-lg font-medium text-gray-500 dark:text-gray-400">No reviews yet</h3>
-      <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Start a new code review to see it here</p>
+      <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Start a new review to see it here</p>
     </div>
 
     <div v-else class="space-y-3">

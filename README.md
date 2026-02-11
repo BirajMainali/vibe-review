@@ -1,4 +1,4 @@
-# Code Review - Local Desktop App
+# Vibe Review - Local Desktop App
 
 A local, offline-first desktop application for self-reviewing code changes in git repositories. Built with Electron, Vue 3, and SQLite.
 
