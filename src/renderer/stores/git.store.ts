@@ -26,6 +26,8 @@ export const useGitStore = defineStore('git', () => {
   const diffOutput = ref('')
   const log = ref<LogEntry[]>([])
   const loading = ref(false)
+  const pushing = ref(false)
+  const staging = ref(false)
 
   async function fetchStatus(repoPath: string) {
     status.value = await window.api.git.status(repoPath)
@@ -56,18 +58,33 @@ export const useGitStore = defineStore('git', () => {
   }
 
   async function stageFiles(repoPath: string, files: string[]) {
-    await window.api.git.stage(repoPath, files)
-    await fetchStatus(repoPath)
+    staging.value = true
+    try {
+      await window.api.git.stage(repoPath, files)
+      await fetchStatus(repoPath)
+    } finally {
+      staging.value = false
+    }
   }
 
   async function unstageFiles(repoPath: string, files: string[]) {
-    await window.api.git.unstage(repoPath, files)
-    await fetchStatus(repoPath)
+    staging.value = true
+    try {
+      await window.api.git.unstage(repoPath, files)
+      await fetchStatus(repoPath)
+    } finally {
+      staging.value = false
+    }
   }
 
   async function stageAll(repoPath: string) {
-    await window.api.git.stageAll(repoPath)
-    await fetchStatus(repoPath)
+    staging.value = true
+    try {
+      await window.api.git.stageAll(repoPath)
+      await fetchStatus(repoPath)
+    } finally {
+      staging.value = false
+    }
   }
 
   async function commitChanges(repoPath: string, message: string) {
@@ -90,8 +107,13 @@ export const useGitStore = defineStore('git', () => {
   }
 
   async function pushBranch(repoPath: string) {
-    await window.api.git.push(repoPath)
-    await refreshAll(repoPath)
+    pushing.value = true
+    try {
+      await window.api.git.push(repoPath)
+      await refreshAll(repoPath)
+    } finally {
+      pushing.value = false
+    }
   }
 
   async function refreshAll(repoPath: string) {
@@ -115,6 +137,8 @@ export const useGitStore = defineStore('git', () => {
     diffOutput,
     log,
     loading,
+    pushing,
+    staging,
     fetchStatus,
     fetchDiff,
     fetchBranches,

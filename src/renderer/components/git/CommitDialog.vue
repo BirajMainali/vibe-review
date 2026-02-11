@@ -59,14 +59,26 @@ async function doCommit() {
           </div>
         </div>
 
-        <textarea
-          v-model="message"
-          placeholder="Commit message..."
-          rows="4"
-          class="w-full px-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-          @keydown.meta.enter="doCommit"
-          @keydown.ctrl.enter="doCommit"
-        />
+        <div class="relative">
+          <textarea
+            v-model="message"
+            placeholder="Commit message..."
+            rows="4"
+            class="w-full pl-10 pr-3 py-2 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+            @keydown.meta.enter="doCommit"
+            @keydown.ctrl.enter="doCommit"
+          />
+          <button
+            type="button"
+            class="absolute left-3 top-3 p-1 rounded-md text-gray-400 hover:text-violet-500 hover:bg-violet-50 dark:hover:bg-violet-900/20 transition-colors"
+            title="Generate commit message with AI (coming soon)"
+          >
+            <!-- AI Bloom / sparkle icon for future commit generation -->
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+            </svg>
+          </button>
+        </div>
         <div class="text-xs text-gray-400 mt-1">Press Ctrl+Enter to commit</div>
       </div>
 

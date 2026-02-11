@@ -74,9 +74,10 @@ function getStatusColor(file: string) {
             </div>
             <button
               @click="unstageFile(file)"
-              class="text-xs text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all px-2 py-0.5 rounded hover:bg-red-50 dark:hover:bg-red-900/20"
+              :disabled="gitStore.staging"
+              class="text-xs text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all px-2 py-0.5 rounded hover:bg-red-50 dark:hover:bg-red-900/20 disabled:opacity-60 disabled:cursor-wait"
             >
-              Unstage
+              {{ gitStore.staging ? '…' : 'Unstage' }}
             </button>
           </div>
         </div>
@@ -90,9 +91,10 @@ function getStatusColor(file: string) {
             <button
               v-if="allUnstaged.length > 0"
               @click="stageAll"
-              class="text-xs text-blue-600 dark:text-blue-400 hover:underline"
+              :disabled="gitStore.staging"
+              class="text-xs text-blue-600 dark:text-blue-400 hover:underline disabled:opacity-60 disabled:cursor-wait"
             >
-              Stage All
+              {{ gitStore.staging ? 'Staging…' : 'Stage All' }}
             </button>
           </div>
           <div v-if="allUnstaged.length === 0" class="text-xs text-gray-400 py-2">No unstaged changes</div>
@@ -103,9 +105,10 @@ function getStatusColor(file: string) {
             </div>
             <button
               @click="stageFile(file)"
-              class="text-xs text-gray-400 hover:text-green-500 opacity-0 group-hover:opacity-100 transition-all px-2 py-0.5 rounded hover:bg-green-50 dark:hover:bg-green-900/20"
+              :disabled="gitStore.staging"
+              class="text-xs text-gray-400 hover:text-green-500 opacity-0 group-hover:opacity-100 transition-all px-2 py-0.5 rounded hover:bg-green-50 dark:hover:bg-green-900/20 disabled:opacity-60 disabled:cursor-wait"
             >
-              Stage
+              {{ gitStore.staging ? '…' : 'Stage' }}
             </button>
           </div>
         </div>

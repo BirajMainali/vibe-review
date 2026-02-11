@@ -92,8 +92,7 @@ async function handlePush() {
   if (!projectStore.currentProject) return
   error.value = ''
   try {
-    await window.api.git.push(projectStore.currentProject.path)
-    await gitStore.refreshAll(projectStore.currentProject.path)
+    await gitStore.pushBranch(projectStore.currentProject.path)
   } catch (e: any) {
     error.value = e.message || 'Push failed'
   }
