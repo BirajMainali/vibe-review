@@ -171,7 +171,7 @@ function handleCommitted() {
       </div>
 
       <!-- Right panel: review summary + comments -->
-      <div v-if="showRightPanel" class="w-80 flex-shrink-0 border-l border-gray-200 dark:border-gray-700 overflow-y-auto bg-gray-50 dark:bg-gray-900/50 p-4 space-y-4">
+      <div v-if="showRightPanel" class="w-80 flex-shrink-0 border-l border-gray-200 dark:border-gray-700 overflow-y-auto bg-gray-50 dark:bg-gray-900/50 p-4 space-y-3">
         <ReviewSummary
           @submit="handleSubmit"
           @export="handleExport"

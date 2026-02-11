@@ -20,52 +20,49 @@ const isSubmitted = computed(() => reviewStore.currentReview?.status === 'submit
 </script>
 
 <template>
-  <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
-    <h3 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">Review Summary</h3>
-
-    <div class="space-y-2 mb-4">
-      <div class="flex items-center justify-between text-sm">
-        <span class="text-gray-500 dark:text-gray-400">Total Comments</span>
-        <span class="font-semibold text-gray-900 dark:text-white">{{ total }}</span>
-      </div>
-
-      <div v-if="counts.bug > 0" class="flex items-center justify-between text-sm">
-        <SeverityBadge severity="bug" />
-        <span class="font-medium text-gray-700 dark:text-gray-300">{{ counts.bug }}</span>
-      </div>
-      <div v-if="counts.suggestion > 0" class="flex items-center justify-between text-sm">
-        <SeverityBadge severity="suggestion" />
-        <span class="font-medium text-gray-700 dark:text-gray-300">{{ counts.suggestion }}</span>
-      </div>
-      <div v-if="counts.nitpick > 0" class="flex items-center justify-between text-sm">
-        <SeverityBadge severity="nitpick" />
-        <span class="font-medium text-gray-700 dark:text-gray-300">{{ counts.nitpick }}</span>
-      </div>
-      <div v-if="counts.question > 0" class="flex items-center justify-between text-sm">
-        <SeverityBadge severity="question" />
-        <span class="font-medium text-gray-700 dark:text-gray-300">{{ counts.question }}</span>
-      </div>
+  <div class="sticky top-0 z-10 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2.5 -mt-px shadow-sm">
+    <!-- Compact header: title + count + severity pills -->
+    <div class="flex flex-wrap items-center gap-2 mb-2">
+      <span class="text-xs font-semibold text-gray-900 dark:text-white">Review Summary</span>
+      <span class="text-xs text-gray-500 dark:text-gray-400">{{ total }} {{ total === 1 ? 'comment' : 'comments' }}</span>
+      <template v-if="total > 0">
+        <span v-if="counts.bug > 0" class="inline-flex items-center gap-1">
+          <SeverityBadge severity="bug" />
+          <span class="text-xs text-gray-600 dark:text-gray-300">{{ counts.bug }}</span>
+        </span>
+        <span v-if="counts.suggestion > 0" class="inline-flex items-center gap-1">
+          <SeverityBadge severity="suggestion" />
+          <span class="text-xs text-gray-600 dark:text-gray-300">{{ counts.suggestion }}</span>
+        </span>
+        <span v-if="counts.nitpick > 0" class="inline-flex items-center gap-1">
+          <SeverityBadge severity="nitpick" />
+          <span class="text-xs text-gray-600 dark:text-gray-300">{{ counts.nitpick }}</span>
+        </span>
+        <span v-if="counts.question > 0" class="inline-flex items-center gap-1">
+          <SeverityBadge severity="question" />
+          <span class="text-xs text-gray-600 dark:text-gray-300">{{ counts.question }}</span>
+        </span>
+      </template>
     </div>
 
-    <div v-if="isSubmitted" class="mb-3 px-3 py-2 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 text-xs rounded-lg text-center">
+    <!-- Submitted state or action buttons -->
+    <div v-if="isSubmitted" class="px-2 py-1.5 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 text-xs rounded-md text-center">
       Review submitted
     </div>
-
-    <div v-if="!readonly" class="space-y-2">
+    <div v-else-if="!readonly" class="flex gap-2">
       <button
         @click="emit('export')"
         :disabled="total === 0"
-        class="w-full px-4 py-2 text-sm font-medium border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        class="flex-1 px-3 py-1.5 text-xs font-medium border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-md hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        Export Markdown
+        Export
       </button>
       <button
-        v-if="!isSubmitted"
         @click="emit('submit')"
         :disabled="total === 0"
-        class="w-full px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+        class="flex-1 px-3 py-1.5 text-xs font-medium bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        Submit Review
+        Submit
       </button>
     </div>
   </div>
