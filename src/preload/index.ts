@@ -19,6 +19,7 @@ const api = {
     isRepo: (repoPath: string) => ipcRenderer.invoke('git:is-repo', repoPath),
     fileContent: (repoPath: string, filePath: string, ref?: string) =>
       ipcRenderer.invoke('git:file-content', repoPath, filePath, ref),
+    pull: (repoPath: string) => ipcRenderer.invoke('git:pull', repoPath),
     push: (repoPath: string) => ipcRenderer.invoke('git:push', repoPath)
   },
 

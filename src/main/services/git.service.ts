@@ -100,6 +100,11 @@ export async function getCurrentBranch(repoPath: string): Promise<string> {
   return status.current || 'HEAD'
 }
 
+export async function pull(repoPath: string): Promise<void> {
+  const git = getGit(repoPath)
+  await git.pull()
+}
+
 export async function push(repoPath: string): Promise<void> {
   const git = getGit(repoPath)
   try {

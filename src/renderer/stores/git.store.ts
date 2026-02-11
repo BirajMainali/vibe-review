@@ -26,6 +26,7 @@ export const useGitStore = defineStore('git', () => {
   const diffOutput = ref('')
   const log = ref<LogEntry[]>([])
   const loading = ref(false)
+  const pulling = ref(false)
   const pushing = ref(false)
   const staging = ref(false)
 
@@ -106,6 +107,16 @@ export const useGitStore = defineStore('git', () => {
     await fetchBranches(repoPath)
   }
 
+  async function pullBranch(repoPath: string) {
+    pulling.value = true
+    try {
+      await window.api.git.pull(repoPath)
+      await refreshAll(repoPath)
+    } finally {
+      pulling.value = false
+    }
+  }
+
   async function pushBranch(repoPath: string) {
     pushing.value = true
     try {
@@ -137,6 +148,7 @@ export const useGitStore = defineStore('git', () => {
     diffOutput,
     log,
     loading,
+    pulling,
     pushing,
     staging,
     fetchStatus,
@@ -149,6 +161,7 @@ export const useGitStore = defineStore('git', () => {
     commitChanges,
     checkoutBranch,
     createBranch,
+    pullBranch,
     pushBranch,
     refreshAll
   }

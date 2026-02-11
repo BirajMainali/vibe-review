@@ -88,6 +88,16 @@ async function handleRefresh() {
   }
 }
 
+async function handlePull() {
+  if (!projectStore.currentProject) return
+  error.value = ''
+  try {
+    await gitStore.pullBranch(projectStore.currentProject.path)
+  } catch (e: any) {
+    error.value = e.message || 'Pull failed'
+  }
+}
+
 async function handlePush() {
   if (!projectStore.currentProject) return
   error.value = ''
@@ -133,6 +143,7 @@ function handleCommitted() {
     <TopBar
       @open-commit="showCommitDialog = true"
       @open-stager="showStager = true"
+      @open-pull="handlePull"
       @open-push="handlePush"
       @refresh="handleRefresh"
     />

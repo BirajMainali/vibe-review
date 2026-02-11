@@ -10,6 +10,7 @@ const projectStore = useProjectStore()
 const emit = defineEmits<{
   (e: 'open-commit'): void
   (e: 'open-stager'): void
+  (e: 'open-pull'): void
   (e: 'open-push'): void
   (e: 'refresh'): void
 }>()
@@ -50,6 +51,22 @@ const emit = defineEmits<{
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
         </svg>
         Commit
+      </button>
+
+      <button
+        @click="emit('open-pull')"
+        :disabled="gitStore.pulling"
+        class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all active:scale-95 disabled:opacity-60 disabled:cursor-wait"
+        title="Pull from remote"
+      >
+        <svg v-if="gitStore.pulling" class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+        </svg>
+        <svg v-else class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l4 4m0 0l4-4m-4 4V4" />
+        </svg>
+        {{ gitStore.pulling ? 'Pulling…' : 'Pull' }}
       </button>
 
       <button
