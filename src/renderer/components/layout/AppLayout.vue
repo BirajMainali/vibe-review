@@ -1,10 +1,14 @@
 <script setup lang="ts">
-import Sidebar from './Sidebar.vue'
+import { useRoute } from 'vue-router'
+import AppTopBar from './AppTopBar.vue'
+
+const route = useRoute()
+const isReview = () => route.name === 'review'
 </script>
 
 <template>
-  <div class="flex h-screen overflow-hidden">
-    <Sidebar />
+  <div class="flex flex-col h-screen overflow-hidden">
+    <AppTopBar v-if="!isReview()" />
     <main class="flex-1 overflow-auto bg-white dark:bg-gray-900">
       <router-view v-slot="{ Component }">
         <transition name="fade" mode="out-in">
