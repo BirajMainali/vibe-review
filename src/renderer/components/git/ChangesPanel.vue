@@ -86,6 +86,7 @@ async function doCommit() {
   try {
     await gitStore.commitChanges(projectStore.currentProject.path, message.value.trim())
     message.value = ''
+    error.value = ''
     emit('committed')
   } catch (e: any) {
     error.value = e.message || 'Commit failed'
@@ -98,6 +99,10 @@ async function generateCommitMessage() {
   if (!projectStore.currentProject) return
   if (stagedFiles.value.length === 0) {
     error.value = 'Stage files first to generate a commit message'
+    return
+  }
+  if (!window.api?.ai?.generateCommitMessage) {
+    error.value = 'AI feature not available. Please restart the app.'
     return
   }
   generating.value = true
@@ -164,8 +169,9 @@ async function generateCommitMessage() {
 
     <!-- Commit at bottom -->
     <div class="p-3 border-t border-gray-200 dark:border-gray-800 space-y-2">
-      <div v-if="error" class="text-xs text-red-600 dark:text-red-400">
-        {{ error }}
+      <div v-if="error" class="text-xs text-red-600 dark:text-red-400 flex items-center justify-between gap-2">
+        <span class="min-w-0">{{ error }}</span>
+        <button @click="error = ''" class="flex-shrink-0 underline hover:no-underline" title="Dismiss">×</button>
       </div>
       <div>
         <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1.5">Description</label>

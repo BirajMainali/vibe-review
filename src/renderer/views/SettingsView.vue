@@ -132,7 +132,7 @@ async function saveOpenAIConfig() {
               placeholder="gpt-4o-mini"
               class="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
-            <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">e.g. gpt-4o-mini, gpt-4o, gpt-4. Azure uses deployment name.</p>
+            <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Required. OpenAI: gpt-4o-mini, gpt-4o. Azure: deployment name. OpenRouter: provider/model.</p>
           </div>
           <button
             @click="saveOpenAIConfig"

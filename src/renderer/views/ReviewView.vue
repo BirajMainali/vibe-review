@@ -25,6 +25,17 @@ const showRightPanel = ref(true)
 
 const projectId = computed(() => Number(route.params.projectId))
 
+// Show unstaged diff when present; otherwise show staged diff when we have staged files
+const effectiveDiff = computed(() => {
+  const unstaged = gitStore.diffOutput || ''
+  if (unstaged.trim()) return unstaged
+  const staged = gitStore.status?.staged?.length
+  if (staged && staged > 0 && gitStore.diffStagedOutput) {
+    return gitStore.diffStagedOutput
+  }
+  return ''
+})
+
 async function init() {
   error.value = ''
   try {
@@ -187,7 +198,7 @@ function handleCommitted() {
         <!-- Diff viewer -->
         <div class="flex-1 overflow-hidden">
           <DiffViewer
-            :diff-string="gitStore.diffOutput"
+            :diff-string="effectiveDiff"
             :review-comments="reviewStore.comments"
             @add-comment="handleAddComment"
           />

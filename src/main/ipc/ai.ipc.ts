@@ -7,11 +7,12 @@ export function registerAiIpc(): void {
   ipcMain.handle('ai:generate-commit-message', async (_e, repoPath: string) => {
     const baseUrl = dbService.getSetting('openai_base_url') || ''
     const apiKey = dbService.getSetting('openai_api_key') || ''
-    const model = dbService.getSetting('openai_model') || ''
 
     if (!baseUrl || !apiKey) {
       throw new Error('Configure OpenAI Base URL and API Key in Settings first')
     }
+
+    const model = dbService.getSetting('openai_model') || ''
 
     const diff = await gitService.getDiffStaged(repoPath)
     if (!diff || !diff.trim()) {

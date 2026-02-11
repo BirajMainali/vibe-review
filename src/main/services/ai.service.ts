@@ -1,12 +1,4 @@
-const COMMIT_SYSTEM_PROMPT = `You are a git commit message generator. Generate a single-line conventional commit message (Husky style) based on the staged diff.
-
-Rules:
-- Use format: type(scope): description
-- Types: feat, fix, docs, style, refactor, test, chore, perf
-- Keep it concise (max 72 chars for the first line)
-- Use imperative mood ("add" not "added", "fix" not "fixed")
-- Do not include quotes or extra formatting - output ONLY the commit message
-- If multiple logical changes, pick the most significant type`
+const COMMIT_SYSTEM_PROMPT = `Generate a single-line conventional commit message (type(scope): description) for the given diff. Use feat, fix, docs, style, refactor, test, chore, or perf. Be concise. Output ONLY the commit message, no quotes or formatting.`
 
 export async function generateCommitMessage(
   diff: string,
@@ -39,15 +31,38 @@ export async function generateCommitMessage(
   })
 
   if (!response.ok) {
-    const err = await response.text()
-    throw new Error(`AI request failed: ${response.status} ${err}`)
+    const errText = await response.text()
+    let message = `AI request failed: ${response.status}`
+    try {
+      const errJson = JSON.parse(errText)
+      const apiMsg = errJson?.error?.message || errJson?.message
+      if (apiMsg) message = apiMsg
+    } catch {
+      if (errText) message += ` ${errText}`
+    }
+    throw new Error(message)
   }
 
-  const data = (await response.json()) as { choices?: { message?: { content?: string } }[] }
-  const content = data.choices?.[0]?.message?.content?.trim()
-  if (!content) {
-    throw new Error('No commit message in AI response')
+  const data = (await response.json()) as Record<string, unknown>
+  const choices = ((data.data ?? data) as any)?.choices
+  const first = choices?.[0]
+  const msg = first?.message ?? first?.delta ?? first
+  const content = msg?.content
+
+  let text = ''
+  if (typeof content === 'string') {
+    text = content
+  } else if (Array.isArray(content) && content[0]) {
+    const part = content[0]
+    text = part?.text ?? part?.content ?? (typeof part === 'string' ? part : '')
+  } else if (typeof first?.text === 'string') {
+    text = first.text
   }
 
-  return content.split('\n')[0].trim()
+  const result = String(text || '').trim()
+  if (!result) {
+    throw new Error(`No commit message in AI response: ${JSON.stringify(data).slice(0, 200)}...`)
+  }
+
+  return result.split('\n')[0].trim()
 }

@@ -24,6 +24,7 @@ export const useGitStore = defineStore('git', () => {
   const branches = ref<BranchInfo>({ current: '', all: [] })
   const status = ref<any>(null)
   const diffOutput = ref('')
+  const diffStagedOutput = ref('')
   const log = ref<LogEntry[]>([])
   const loading = ref(false)
   const pulling = ref(false)
@@ -37,6 +38,10 @@ export const useGitStore = defineStore('git', () => {
 
   async function fetchDiff(repoPath: string) {
     diffOutput.value = await window.api.git.diff(repoPath)
+  }
+
+  async function fetchDiffStaged(repoPath: string) {
+    diffStagedOutput.value = await window.api.git.diffStaged(repoPath)
   }
 
   async function fetchBranches(repoPath: string) {
@@ -90,8 +95,7 @@ export const useGitStore = defineStore('git', () => {
 
   async function commitChanges(repoPath: string, message: string) {
     const hash = await window.api.git.commit(repoPath, message)
-    await fetchStatus(repoPath)
-    await fetchLog(repoPath)
+    await refreshAll(repoPath)
     return hash
   }
 
@@ -133,6 +137,7 @@ export const useGitStore = defineStore('git', () => {
       await Promise.all([
         fetchStatus(repoPath),
         fetchDiff(repoPath),
+        fetchDiffStaged(repoPath),
         fetchBranches(repoPath),
         fetchLog(repoPath)
       ])
@@ -146,6 +151,7 @@ export const useGitStore = defineStore('git', () => {
     branches,
     status,
     diffOutput,
+    diffStagedOutput,
     log,
     loading,
     pulling,
