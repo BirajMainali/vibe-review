@@ -18,7 +18,8 @@ const api = {
     currentBranch: (repoPath: string) => ipcRenderer.invoke('git:current-branch', repoPath),
     isRepo: (repoPath: string) => ipcRenderer.invoke('git:is-repo', repoPath),
     fileContent: (repoPath: string, filePath: string, ref?: string) =>
-      ipcRenderer.invoke('git:file-content', repoPath, filePath, ref)
+      ipcRenderer.invoke('git:file-content', repoPath, filePath, ref),
+    push: (repoPath: string) => ipcRenderer.invoke('git:push', repoPath)
   },
 
   // Database: Projects

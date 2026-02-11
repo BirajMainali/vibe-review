@@ -89,6 +89,11 @@ export const useGitStore = defineStore('git', () => {
     await fetchBranches(repoPath)
   }
 
+  async function pushBranch(repoPath: string) {
+    await window.api.git.push(repoPath)
+    await refreshAll(repoPath)
+  }
+
   async function refreshAll(repoPath: string) {
     loading.value = true
     try {
@@ -120,6 +125,7 @@ export const useGitStore = defineStore('git', () => {
     commitChanges,
     checkoutBranch,
     createBranch,
+    pushBranch,
     refreshAll
   }
 })

@@ -61,4 +61,8 @@ export function registerGitIpc(): void {
   ipcMain.handle('git:file-content', async (_e, repoPath: string, filePath: string, ref?: string) => {
     return gitService.getFileContent(repoPath, filePath, ref)
   })
+
+  ipcMain.handle('git:push', async (_e, repoPath: string) => {
+    await gitService.push(repoPath)
+  })
 }

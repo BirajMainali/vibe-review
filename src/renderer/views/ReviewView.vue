@@ -88,6 +88,17 @@ async function handleRefresh() {
   }
 }
 
+async function handlePush() {
+  if (!projectStore.currentProject) return
+  error.value = ''
+  try {
+    await window.api.git.push(projectStore.currentProject.path)
+    await gitStore.refreshAll(projectStore.currentProject.path)
+  } catch (e: any) {
+    error.value = e.message || 'Push failed'
+  }
+}
+
 async function handleSubmit() {
   try {
     await reviewStore.submitReview()
@@ -123,6 +134,7 @@ function handleCommitted() {
     <TopBar
       @open-commit="showCommitDialog = true"
       @open-stager="showStager = true"
+      @open-push="handlePush"
       @refresh="handleRefresh"
     />
 

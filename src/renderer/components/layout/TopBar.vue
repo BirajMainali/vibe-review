@@ -10,6 +10,7 @@ const projectStore = useProjectStore()
 const emit = defineEmits<{
   (e: 'open-commit'): void
   (e: 'open-stager'): void
+  (e: 'open-push'): void
   (e: 'refresh'): void
 }>()
 </script>
@@ -44,6 +45,16 @@ const emit = defineEmits<{
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
         </svg>
         Commit
+      </button>
+
+      <button
+        @click="emit('open-push')"
+        class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+      >
+        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+        </svg>
+        Push
       </button>
 
       <button

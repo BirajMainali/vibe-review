@@ -100,6 +100,23 @@ export async function getCurrentBranch(repoPath: string): Promise<string> {
   return status.current || 'HEAD'
 }
 
+export async function push(repoPath: string): Promise<void> {
+  const git = getGit(repoPath)
+  try {
+    await git.push()
+  } catch (err: any) {
+    // If no upstream branch, set it and push
+    if (err?.message?.includes('no upstream')) {
+      const branch = await getCurrentBranch(repoPath)
+      if (branch && branch !== 'HEAD') {
+        await git.push(['-u', 'origin', branch])
+        return
+      }
+    }
+    throw err
+  }
+}
+
 export async function isGitRepo(repoPath: string): Promise<boolean> {
   try {
     return await getGit(repoPath).checkIsRepo()
