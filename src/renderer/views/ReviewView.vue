@@ -9,8 +9,7 @@ import DiffViewer from '@/components/diff/DiffViewer.vue'
 import ReviewPanel from '@/components/review/ReviewPanel.vue'
 import ReviewSummary from '@/components/review/ReviewSummary.vue'
 import CommentList from '@/components/review/CommentList.vue'
-import FileStager from '@/components/git/FileStager.vue'
-import CommitDialog from '@/components/git/CommitDialog.vue'
+import ChangesPanel from '@/components/git/ChangesPanel.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -18,8 +17,7 @@ const projectStore = useProjectStore()
 const gitStore = useGitStore()
 const reviewStore = useReviewStore()
 
-const showStager = ref(false)
-const showCommitDialog = ref(false)
+const showChangesPanel = ref(true)
 const showCommentForm = ref(false)
 const commentFormData = ref<{ filePath: string; startLine: number; endLine: number; side: string } | null>(null)
 const error = ref('')
@@ -131,8 +129,6 @@ function handleCommitted() {
 <template>
   <div class="flex flex-col h-full">
     <TopBar
-      @open-commit="showCommitDialog = true"
-      @open-stager="showStager = true"
       @open-push="handlePush"
       @refresh="handleRefresh"
     />
@@ -143,6 +139,24 @@ function handleCommitted() {
     </div>
 
     <div class="flex flex-1 overflow-hidden">
+      <!-- Changes panel (staging checklist + commit) -->
+      <template v-if="showChangesPanel">
+        <ChangesPanel
+          @committed="handleCommitted"
+        />
+      </template>
+
+      <!-- Panel toggle (changes) -->
+      <button
+        @click="showChangesPanel = !showChangesPanel"
+        class="flex-shrink-0 w-6 flex items-center justify-center bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 border-r border-gray-200 dark:border-gray-700 transition-colors"
+        :title="showChangesPanel ? 'Hide changes' : 'Show changes'"
+      >
+        <svg class="w-3.5 h-3.5 text-gray-400 transition-transform" :class="{ 'rotate-180': showChangesPanel }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+
       <!-- Diff area -->
       <div class="flex-1 overflow-hidden flex flex-col">
         <!-- Comment form overlay -->
@@ -194,8 +208,5 @@ function handleCommitted() {
       </button>
     </div>
 
-    <!-- Modals -->
-    <FileStager v-if="showStager" @close="showStager = false" />
-    <CommitDialog v-if="showCommitDialog" @close="showCommitDialog = false" @committed="handleCommitted" />
   </div>
 </template>
