@@ -23,6 +23,11 @@ const deletedFiles = computed(() => gitStore.status?.deleted || [])
 const createdFiles = computed(() => gitStore.status?.created || [])
 
 const allChangedFiles = computed(() => {
+  const files = gitStore.status?.files
+  if (files?.length) {
+    // Preserve git status row order (no sorting)
+    return files.map((f: { path: string }) => f.path)
+  }
   const seen = new Set<string>()
   const result: string[] = []
   for (const f of [...stagedFiles.value, ...modifiedFiles.value, ...untrackedFiles.value, ...deletedFiles.value, ...createdFiles.value]) {
@@ -161,7 +166,10 @@ async function generateCommitMessage() {
         >
           {{ getStatusIcon(file) }}
         </span>
-        <span class="text-sm text-gray-700 dark:text-gray-300 truncate flex-1 min-w-0" :title="file">
+        <span
+          class="text-sm text-gray-700 dark:text-gray-300 truncate flex-1 min-w-0 cursor-default"
+          :title="file"
+        >
           {{ file }}
         </span>
       </div>
