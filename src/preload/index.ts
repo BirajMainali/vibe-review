@@ -85,6 +85,10 @@ const api = {
     selectExportDir: () => ipcRenderer.invoke('dialog:select-export-dir')
   },
 
+  // AI
+  ai: {
+    generateCommitMessage: (repoPath: string) => ipcRenderer.invoke('ai:generate-commit-message', repoPath)
+  }
 }
 
 contextBridge.exposeInMainWorld('api', api)

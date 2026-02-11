@@ -5,6 +5,9 @@ export const useSettingsStore = defineStore('settings', () => {
   const webhookUrl = ref('')
   const exportDir = ref('')
   const darkMode = ref(false)
+  const openaiBaseUrl = ref('')
+  const openaiApiKey = ref('')
+  const openaiModel = ref('')
   const loading = ref(false)
 
   async function loadSettings() {
@@ -14,6 +17,9 @@ export const useSettingsStore = defineStore('settings', () => {
       webhookUrl.value = all['webhook_url'] || ''
       exportDir.value = all['export_dir'] || ''
       darkMode.value = all['dark_mode'] === 'true'
+      openaiBaseUrl.value = all['openai_base_url'] || ''
+      openaiApiKey.value = all['openai_api_key'] || ''
+      openaiModel.value = all['openai_model'] || ''
       applyDarkMode()
     } finally {
       loading.value = false
@@ -28,6 +34,15 @@ export const useSettingsStore = defineStore('settings', () => {
   async function setExportDir(dir: string) {
     exportDir.value = dir
     await window.api.settings.set('export_dir', dir)
+  }
+
+  async function setOpenAIConfig(baseUrl: string, apiKey: string, model: string) {
+    openaiBaseUrl.value = baseUrl
+    openaiApiKey.value = apiKey
+    openaiModel.value = model
+    await window.api.settings.set('openai_base_url', baseUrl)
+    await window.api.settings.set('openai_api_key', apiKey)
+    await window.api.settings.set('openai_model', model)
   }
 
   async function toggleDarkMode() {
@@ -52,10 +67,14 @@ export const useSettingsStore = defineStore('settings', () => {
     webhookUrl,
     exportDir,
     darkMode,
+    openaiBaseUrl,
+    openaiApiKey,
+    openaiModel,
     loading,
     loadSettings,
     setWebhookUrl,
     setExportDir,
+    setOpenAIConfig,
     toggleDarkMode,
     testWebhook,
     applyDarkMode

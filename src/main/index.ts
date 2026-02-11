@@ -6,6 +6,7 @@ import { registerDbIpc } from './ipc/db.ipc'
 import { registerReviewIpc } from './ipc/review.ipc'
 import { registerExportIpc } from './ipc/export.ipc'
 import { registerWebhookIpc } from './ipc/webhook.ipc'
+import { registerAiIpc } from './ipc/ai.ipc'
 import { closeDb } from './services/db.service'
 
 function createWindow(): void {
@@ -51,6 +52,7 @@ app.whenReady().then(() => {
   registerReviewIpc()
   registerExportIpc()
   registerWebhookIpc()
+  registerAiIpc()
 
   // Dialog handlers
   ipcMain.handle('dialog:open-directory', async () => {
