@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true,
+    "jsx": "preserve",
+    "outDir": "./out",
+    "resolveJsonModule": true,
+    "strict": true,
+    "target": "ESNext",
+    "paths": {
+      "@/*": ["./src/renderer/*"]
+    }
+  },
+  "include": [
+    "src/renderer/**/*",
+    "src/renderer/**/*.vue"
+  ]
+}
