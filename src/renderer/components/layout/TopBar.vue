@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useGitStore } from '@/stores/git.store'
 import { useProjectStore } from '@/stores/project.store'
@@ -9,6 +10,8 @@ import RepoSwitcher from '@/components/git/RepoSwitcher.vue'
 const router = useRouter()
 const gitStore = useGitStore()
 const projectStore = useProjectStore()
+
+const hasUnpushedCommits = computed(() => (gitStore.status?.ahead ?? 0) > 0)
 
 const emit = defineEmits<{
   (e: 'open-pull'): void
@@ -45,8 +48,9 @@ const emit = defineEmits<{
 
       <button
         @click="emit('open-push')"
-        :disabled="gitStore.pushing"
-        class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all active:scale-95 disabled:opacity-60 disabled:cursor-wait"
+        :disabled="gitStore.pushing || !hasUnpushedCommits"
+        class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-md border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
+        :title="hasUnpushedCommits ? 'Push to remote' : 'Nothing to push'"
       >
         <svg v-if="gitStore.pushing" class="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
