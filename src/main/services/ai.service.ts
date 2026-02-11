@@ -61,7 +61,7 @@ export async function generateCommitMessage(
 
   const result = String(text || '').trim()
   if (!result) {
-    throw new Error(`No commit message in AI response: ${JSON.stringify(data).slice(0, 200)}...`)
+    throw new Error('AI returned empty content. Try a different model.')
   }
 
   return result.split('\n')[0].trim()
