@@ -18,6 +18,8 @@ const reviewStore = useReviewStore()
 const comment = ref('')
 const severity = ref('suggestion')
 const saving = ref(false)
+const rephrasing = ref(false)
+const rephraseError = ref('')
 
 const severities = [
   { value: 'bug', label: 'Bug', color: 'border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400' },
@@ -43,6 +45,23 @@ async function save() {
     emit('close')
   } finally {
     saving.value = false
+  }
+}
+
+async function rephraseComment() {
+  if (!comment.value.trim()) return
+  if (!window.api?.ai?.rephraseComment) {
+    rephraseError.value = 'AI feature not available. Please restart the app.'
+    return
+  }
+  rephraseError.value = ''
+  rephrasing.value = true
+  try {
+    comment.value = await window.api.ai.rephraseComment(comment.value.trim())
+  } catch (e: any) {
+    rephraseError.value = e.message || 'Rephrase failed'
+  } finally {
+    rephrasing.value = false
   }
 }
 </script>
@@ -78,15 +97,36 @@ async function save() {
       </div>
 
       <!-- Comment input -->
-      <textarea
-        v-model="comment"
-        placeholder="Write your review comment..."
-        rows="4"
-        class="w-full px-3 py-2 text-sm bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-        @keydown.meta.enter="save"
-        @keydown.ctrl.enter="save"
-      />
+      <div class="relative">
+        <textarea
+          v-model="comment"
+          placeholder="Write your review comment..."
+          rows="4"
+          class="w-full pl-10 pr-3 py-2 text-sm bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+          @keydown.meta.enter="save"
+          @keydown.ctrl.enter="save"
+        />
+        <button
+          type="button"
+          @click="rephraseComment"
+          :disabled="rephrasing || !comment.trim()"
+          class="absolute left-2.5 top-2.5 p-1 rounded-md transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          :class="rephrasing ? 'text-blue-400' : 'text-gray-400 hover:text-violet-500 hover:bg-violet-50 dark:hover:bg-violet-900/20'"
+          title="Rephrase with AI"
+        >
+          <svg v-if="rephrasing" class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+          </svg>
+          <svg v-else class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z" />
+          </svg>
+        </button>
+      </div>
 
+      <div v-if="rephraseError" class="mt-2 text-xs text-red-600 dark:text-red-400">
+        {{ rephraseError }}
+      </div>
       <div class="flex items-center justify-between mt-3">
         <span class="text-xs text-gray-400">Ctrl+Enter to save</span>
         <div class="flex gap-2">

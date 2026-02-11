@@ -24,4 +24,21 @@ export function registerAiIpc(): void {
 
     return aiService.generateCommitMessage(truncatedDiff, baseUrl, apiKey, model)
   })
+
+  ipcMain.handle('ai:rephrase-comment', async (_e, text: string) => {
+    const baseUrl = dbService.getSetting('openai_base_url') || ''
+    const apiKey = dbService.getSetting('openai_api_key') || ''
+
+    if (!baseUrl || !apiKey) {
+      throw new Error('Configure OpenAI Base URL and API Key in Settings first')
+    }
+
+    const model = dbService.getSetting('openai_model') || ''
+
+    if (!text?.trim()) {
+      throw new Error('Enter some text to rephrase')
+    }
+
+    return aiService.rephraseComment(text.trim(), baseUrl, apiKey, model)
+  })
 }
