@@ -60,21 +60,23 @@ async function selectExportDir() {
     <section class="mb-8">
       <h2 class="text-sm font-semibold text-gray-900 dark:text-white mb-3">Appearance</h2>
       <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-5">
-        <div class="flex items-center justify-between">
-          <div>
-            <div class="text-sm font-medium text-gray-700 dark:text-gray-300">Dark Mode</div>
-            <div class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Toggle between light and dark theme</div>
+        <div class="flex flex-col gap-6">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-sm font-medium text-gray-700 dark:text-gray-300">Dark Mode</div>
+              <div class="text-xs text-gray-400 dark:text-gray-500 mt-0.5">Toggle between light and dark theme</div>
+            </div>
+            <button
+              @click="settingsStore.toggleDarkMode()"
+              class="relative w-11 h-6 rounded-full transition-colors"
+              :class="settingsStore.darkMode ? 'bg-blue-600' : 'bg-gray-300 dark:bg-gray-600'"
+            >
+              <span
+                class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform"
+                :class="{ 'translate-x-5': settingsStore.darkMode }"
+              />
+            </button>
           </div>
-          <button
-            @click="settingsStore.toggleDarkMode()"
-            class="relative w-11 h-6 rounded-full transition-colors"
-            :class="settingsStore.darkMode ? 'bg-blue-600' : 'bg-gray-300 dark:bg-gray-600'"
-          >
-            <span
-              class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform"
-              :class="{ 'translate-x-5': settingsStore.darkMode }"
-            />
-          </button>
         </div>
       </div>
     </section>

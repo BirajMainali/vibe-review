@@ -81,7 +81,8 @@ const api = {
   dialog: {
     openDirectory: () => ipcRenderer.invoke('dialog:open-directory'),
     selectExportDir: () => ipcRenderer.invoke('dialog:select-export-dir')
-  }
+  },
+
 }
 
 contextBridge.exposeInMainWorld('api', api)

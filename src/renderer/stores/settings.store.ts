@@ -57,6 +57,7 @@ export const useSettingsStore = defineStore('settings', () => {
     setWebhookUrl,
     setExportDir,
     toggleDarkMode,
-    testWebhook
+    testWebhook,
+    applyDarkMode
   }
 })

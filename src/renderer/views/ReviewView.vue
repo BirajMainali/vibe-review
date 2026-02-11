@@ -98,6 +98,8 @@ async function handleSubmit() {
     }
     // Export markdown
     await reviewStore.exportMarkdown()
+    // Clear the review logs after successful submission
+    reviewStore.clearCurrent()
   } catch (e: any) {
     error.value = e.message || 'Submit failed'
   }

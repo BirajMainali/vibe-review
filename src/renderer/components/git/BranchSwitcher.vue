@@ -45,6 +45,8 @@ async function createBranch() {
 // Close on click outside
 function handleClickOutside(e: MouseEvent) {
   const target = e.target as HTMLElement
+  // If the target was removed from the DOM (e.g. by v-if re-render), skip closing
+  if (!target.isConnected) return
   if (!target.closest('.branch-switcher')) {
     isOpen.value = false
     showNewBranch.value = false

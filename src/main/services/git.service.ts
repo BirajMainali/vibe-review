@@ -1,11 +1,29 @@
-import simpleGit, { SimpleGit, StatusResult, BranchSummary, LogResult, DiffResult } from 'simple-git'
+import simpleGit, { SimpleGit } from 'simple-git'
 
 function getGit(repoPath: string): SimpleGit {
   return simpleGit(repoPath)
 }
 
-export async function getStatus(repoPath: string): Promise<StatusResult> {
-  return getGit(repoPath).status()
+export async function getStatus(repoPath: string) {
+  const status = await getGit(repoPath).status()
+  // Return a plain serializable object — StatusResult contains an isClean() method
+  // which cannot be sent over Electron IPC (structured clone cannot serialize functions)
+  return {
+    not_added: status.not_added,
+    conflicted: status.conflicted,
+    created: status.created,
+    deleted: status.deleted,
+    modified: status.modified,
+    renamed: status.renamed,
+    staged: status.staged,
+    files: status.files.map((f) => ({ path: f.path, index: f.index, working_dir: f.working_dir })),
+    ahead: status.ahead,
+    behind: status.behind,
+    current: status.current,
+    tracking: status.tracking,
+    detached: status.detached,
+    isClean: status.isClean()
+  }
 }
 
 export async function getDiff(repoPath: string): Promise<string> {
@@ -33,8 +51,19 @@ export async function commit(repoPath: string, message: string): Promise<string>
   return result.commit
 }
 
-export async function getBranches(repoPath: string): Promise<BranchSummary> {
-  return getGit(repoPath).branchLocal()
+export async function getBranches(repoPath: string) {
+  const summary = await getGit(repoPath).branchLocal()
+  return {
+    detached: summary.detached,
+    current: summary.current,
+    all: summary.all,
+    branches: Object.fromEntries(
+      Object.entries(summary.branches).map(([k, v]) => [
+        k,
+        { current: v.current, name: v.name, commit: v.commit, label: v.label, linkedWorkTree: v.linkedWorkTree }
+      ])
+    )
+  }
 }
 
 export async function checkout(repoPath: string, branch: string): Promise<void> {
@@ -45,8 +74,13 @@ export async function createBranch(repoPath: string, branch: string): Promise<vo
   await getGit(repoPath).checkoutLocalBranch(branch)
 }
 
-export async function getLog(repoPath: string, maxCount = 50): Promise<LogResult> {
-  return getGit(repoPath).log({ maxCount })
+export async function getLog(repoPath: string, maxCount = 50) {
+  const result = await getGit(repoPath).log({ maxCount })
+  return {
+    total: result.total,
+    latest: result.latest ? { ...result.latest } : null,
+    all: result.all.map((entry) => ({ ...entry }))
+  }
 }
 
 export async function getFileContent(repoPath: string, filePath: string, ref = 'HEAD'): Promise<string> {

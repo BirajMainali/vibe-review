@@ -69,7 +69,7 @@ function handleAddComment(data: { filePath: string; startLine: number; endLine: 
     </div>
 
     <!-- Diff content area -->
-    <div class="flex-1 overflow-y-auto">
+    <div class="flex-1 overflow-y-auto code-font text-xs">
       <DiffFile
         v-for="file in parsedFiles"
         :key="file.newName"
