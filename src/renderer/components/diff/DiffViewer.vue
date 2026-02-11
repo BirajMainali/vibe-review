@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { parse, type DiffFile as DiffFileType } from 'diff2html'
 import DiffFile from './DiffFile.vue'
 
@@ -22,14 +22,6 @@ const parsedFiles = computed((): DiffFileType[] => {
   }
 })
 
-const selectedFile = ref<string | null>(null)
-
-function selectFile(file: string) {
-  selectedFile.value = file
-  const el = document.getElementById(`diff-file-${file.replace(/[^a-zA-Z0-9]/g, '-')}`)
-  el?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-}
-
 function getFileComments(filePath: string) {
   if (!props.reviewComments) return []
   return props.reviewComments.filter((c) => c.file_path === filePath)
@@ -42,33 +34,6 @@ function handleAddComment(data: { filePath: string; startLine: number; endLine: 
 
 <template>
   <div class="flex h-full" v-if="parsedFiles.length > 0">
-    <!-- File list sidebar -->
-    <div class="w-64 flex-shrink-0 border-r border-gray-200 dark:border-gray-700 overflow-y-auto bg-gray-50/50 dark:bg-gray-900/50">
-      <div class="p-3">
-        <h3 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-2 px-2">
-          Changed Files ({{ parsedFiles.length }})
-        </h3>
-        <nav class="space-y-0.5">
-          <button
-            v-for="file in parsedFiles"
-            :key="file.newName"
-            @click="selectFile(file.newName)"
-            class="w-full text-left px-2.5 py-1.5 rounded-md text-xs transition-colors flex items-center gap-2"
-            :class="selectedFile === file.newName
-              ? 'bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300'
-              : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800/50'"
-          >
-            <span class="flex-shrink-0 flex items-center gap-1">
-              <span class="text-green-600 dark:text-green-400">+{{ file.addedLines }}</span>
-              <span class="text-red-600 dark:text-red-400">-{{ file.deletedLines }}</span>
-            </span>
-            <span class="truncate">{{ file.newName }}</span>
-          </button>
-        </nav>
-      </div>
-    </div>
-
-    <!-- Diff content area -->
     <div class="flex-1 overflow-y-auto code-font text-xs">
       <DiffFile
         v-for="file in parsedFiles"
