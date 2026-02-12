@@ -88,7 +88,7 @@ const api = {
   // AI
   ai: {
     generateCommitMessage: (repoPath: string) => ipcRenderer.invoke('ai:generate-commit-message', repoPath),
-    rephraseComment: (text: string) => ipcRenderer.invoke('ai:rephrase-comment', text)
+    rephraseComment: (text: string, severity: string) => ipcRenderer.invoke('ai:rephrase-comment', text, severity)
   }
 }
 

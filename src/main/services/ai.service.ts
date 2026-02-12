@@ -1,6 +1,6 @@
 const COMMIT_SYSTEM_PROMPT = `Generate a single-line conventional commit message (type(scope): description) for the given diff. Use feat, fix, docs, style, refactor, test, chore, or perf. Be concise. Output ONLY the commit message, no quotes or formatting.`
 
-const REPHRASE_SYSTEM_PROMPT = `Rephrase the given code review comment to be clearer and more professional. Keep the same meaning and intent. Output ONLY the rephrased text, no quotes or extra formatting.`
+const REPHRASE_SYSTEM_PROMPT = `Rephrase the given code review comment to be clearer and more professional. Keep the same meaning and intent. The comment's severity type is provided for context — adapt the tone accordingly (e.g. a "bug" should sound more urgent, a "nitpick" should be gentle, a "suggestion" should be constructive, a "question" should be inquisitive). Output ONLY the rephrased text, no quotes or extra formatting.`
 
 export async function generateCommitMessage(
   diff: string,
@@ -71,6 +71,7 @@ export async function generateCommitMessage(
 
 export async function rephraseComment(
   text: string,
+  severity: string,
   baseUrl: string,
   apiKey: string,
   model: string
@@ -92,7 +93,7 @@ export async function rephraseComment(
       model: modelToUse,
       messages: [
         { role: 'system', content: REPHRASE_SYSTEM_PROMPT },
-        { role: 'user', content: `Rephrase this code review comment:\n\n${text}` }
+        { role: 'user', content: `Severity: ${severity}\n\nRephrase this code review comment:\n\n${text}` }
       ],
       max_tokens: 300,
       temperature: 0.3

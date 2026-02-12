@@ -57,7 +57,7 @@ async function rephraseComment() {
   rephraseError.value = ''
   rephrasing.value = true
   try {
-    comment.value = await window.api.ai.rephraseComment(comment.value.trim())
+    comment.value = await window.api.ai.rephraseComment(comment.value.trim(), severity.value)
   } catch (e: any) {
     rephraseError.value = e.message || 'Rephrase failed'
   } finally {
