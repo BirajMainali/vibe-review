@@ -52,7 +52,7 @@ function cancelEdit() {
 </script>
 
 <template>
-  <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-sm">
+  <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden shadow-sm font-sans text-sm">
     <!-- Header -->
     <div class="flex items-center justify-between px-3 py-2 bg-gray-50 dark:bg-gray-800/80 border-b border-gray-100 dark:border-gray-700">
       <div class="flex items-center gap-2">
@@ -94,7 +94,7 @@ function cancelEdit() {
 
     <!-- Body -->
     <div class="px-3 py-2">
-      <div v-if="!editing" class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{{ comment.comment }}</div>
+      <div v-if="!editing" class="text-sm leading-relaxed text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{{ comment.comment }}</div>
       <div v-else>
         <textarea
           v-model="editText"

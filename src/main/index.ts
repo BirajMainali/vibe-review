@@ -1,6 +1,7 @@
 import { app, shell, BrowserWindow, dialog, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
+import icon from '../../resources/icon.png?asset'
 import { registerGitIpc } from './ipc/git.ipc'
 import { registerDbIpc } from './ipc/db.ipc'
 import { registerReviewIpc } from './ipc/review.ipc'
@@ -16,6 +17,7 @@ function createWindow(): void {
     minHeight: 700,
     show: false,
     title: 'Vibe Review',
+    icon,
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
       sandbox: false

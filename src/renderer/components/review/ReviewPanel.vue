@@ -67,7 +67,7 @@ async function rephraseComment() {
 </script>
 
 <template>
-  <div class="bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-800 rounded-lg shadow-lg overflow-hidden">
+  <div class="bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-800 rounded-lg shadow-lg overflow-hidden font-sans text-sm">
     <div class="px-4 py-3 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-100 dark:border-blue-800">
       <div class="flex items-center justify-between">
         <div class="text-sm font-medium text-blue-800 dark:text-blue-300">

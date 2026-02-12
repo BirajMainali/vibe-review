@@ -183,7 +183,7 @@ function getSeverityCounts(comments: any[]) {
                   <SeverityBadge :severity="comment.severity" />
                   <span class="text-xs font-mono text-gray-500">{{ comment.file_path }}:{{ comment.start_line }}{{ comment.start_line !== comment.end_line ? '-' + comment.end_line : '' }}</span>
                 </div>
-                <p class="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{{ comment.comment }}</p>
+                <p class="text-sm leading-relaxed font-sans text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{{ comment.comment }}</p>
               </div>
             </div>
           </div>
