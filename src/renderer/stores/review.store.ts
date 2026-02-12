@@ -106,11 +106,6 @@ export const useReviewStore = defineStore('review', () => {
     return window.api.export.markdown(currentReview.value.id)
   }
 
-  async function sendWebhook() {
-    if (!currentReview.value) return null
-    return window.api.webhook.send(currentReview.value.id)
-  }
-
   async function deleteReview(id: number) {
     await window.api.reviews.delete(id)
     reviews.value = reviews.value.filter((r) => r.id !== id)
@@ -140,7 +135,6 @@ export const useReviewStore = defineStore('review', () => {
     deleteComment,
     submitReview,
     exportMarkdown,
-    sendWebhook,
     deleteReview,
     clearCurrent
   }

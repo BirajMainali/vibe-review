@@ -10,7 +10,6 @@ A local, offline-first desktop application for self-reviewing code changes in gi
 - **Severity labels** — Categorize comments as Bug, Suggestion, Nitpick, or Question
 - **Git operations** — Stage/unstage files, commit, switch branches, create branches
 - **Markdown export** — Export reviews as formatted Markdown files
-- **Webhook integration** — Configure a webhook URL to POST review data on submission
 - **Dark mode** — Toggle between light and dark themes
 - **Review history** — Browse past reviews and their comments
 

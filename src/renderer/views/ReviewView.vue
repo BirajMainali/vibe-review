@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useProjectStore } from '@/stores/project.store'
 import { useGitStore } from '@/stores/git.store'
 import { useReviewStore } from '@/stores/review.store'
+import { useSettingsStore } from '@/stores/settings.store'
 import TopBar from '@/components/layout/TopBar.vue'
 import DiffViewer from '@/components/diff/DiffViewer.vue'
 import ReviewPanel from '@/components/review/ReviewPanel.vue'
@@ -16,11 +17,13 @@ const router = useRouter()
 const projectStore = useProjectStore()
 const gitStore = useGitStore()
 const reviewStore = useReviewStore()
+const settingsStore = useSettingsStore()
 
 const showChangesPanel = ref(true)
 const showCommentForm = ref(false)
 const commentFormData = ref<{ filePath: string; startLine: number; endLine: number; side: string } | null>(null)
 const error = ref('')
+const successMessage = ref('')
 const showRightPanel = ref(true)
 
 const projectId = computed(() => Number(route.params.projectId))
@@ -117,26 +120,32 @@ async function handlePush() {
   }
 }
 
-async function handleSubmit() {
-  try {
-    await reviewStore.submitReview()
-    // Try to send webhook
-    const result = await reviewStore.sendWebhook()
-    if (result && !result.ok) {
-      console.warn('Webhook failed:', result.body)
-    }
-    // Export markdown
-    await reviewStore.exportMarkdown()
-    // Clear the review logs after successful submission
-    reviewStore.clearCurrent()
-  } catch (e: any) {
-    error.value = e.message || 'Submit failed'
+async function handleFinish() {
+  if (!reviewStore.currentReview) return
+  const exportDir = settingsStore.exportDir?.trim()
+  if (!exportDir) {
+    error.value = 'Please set Export Directory in Settings first'
+    return
   }
-}
-
-async function handleExport() {
+  error.value = ''
+  successMessage.value = ''
   try {
-    await reviewStore.exportMarkdown()
+    const filePath = await window.api.export.markdownToPath(reviewStore.currentReview.id, exportDir)
+    if (!filePath?.path) throw new Error('Export failed')
+
+    const url = settingsStore.deeplinkUrl?.trim()
+    const hasDeeplink = !!url?.includes('{REVIEW_PATH}') && !!settingsStore.deeplinkPlatformName?.trim()
+
+    if (hasDeeplink) {
+      let finalUrl = url
+      if (!finalUrl.startsWith('http://') && !finalUrl.startsWith('https://')) {
+        finalUrl = 'https://' + finalUrl
+      }
+      finalUrl = finalUrl.replace(/\{REVIEW_PATH\}/g, encodeURIComponent(filePath.path))
+      await window.api.shell.openExternal(finalUrl)
+    } else {
+      successMessage.value = `Review exported to ${filePath.path}`
+    }
   } catch (e: any) {
     error.value = e.message || 'Export failed'
   }
@@ -158,6 +167,10 @@ function handleCommitted() {
     <div v-if="error" class="px-4 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 text-sm border-b border-red-100 dark:border-red-900">
       {{ error }}
       <button @click="error = ''" class="ml-2 underline text-xs">dismiss</button>
+    </div>
+    <div v-if="successMessage" class="px-4 py-2 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 text-sm border-b border-green-100 dark:border-green-900">
+      {{ successMessage }}
+      <button @click="successMessage = ''" class="ml-2 underline text-xs">dismiss</button>
     </div>
 
     <div class="flex flex-1 overflow-hidden">
@@ -208,8 +221,10 @@ function handleCommitted() {
       <!-- Right panel: review summary + comments -->
       <div v-if="showRightPanel" class="w-80 flex-shrink-0 border-l border-gray-200 dark:border-gray-700 overflow-y-auto bg-gray-50 dark:bg-gray-900/50 p-4 space-y-3">
         <ReviewSummary
-          @submit="handleSubmit"
-          @export="handleExport"
+          :deeplink-platform-name="settingsStore.deeplinkPlatformName"
+          :deeplink-url="settingsStore.deeplinkUrl"
+          :export-dir="settingsStore.exportDir"
+          @finish="handleFinish"
         />
 
         <div>

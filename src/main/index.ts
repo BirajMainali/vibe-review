@@ -5,7 +5,6 @@ import { registerGitIpc } from './ipc/git.ipc'
 import { registerDbIpc } from './ipc/db.ipc'
 import { registerReviewIpc } from './ipc/review.ipc'
 import { registerExportIpc } from './ipc/export.ipc'
-import { registerWebhookIpc } from './ipc/webhook.ipc'
 import { registerAiIpc } from './ipc/ai.ipc'
 import { closeDb } from './services/db.service'
 
@@ -51,7 +50,6 @@ app.whenReady().then(() => {
   registerDbIpc()
   registerReviewIpc()
   registerExportIpc()
-  registerWebhookIpc()
   registerAiIpc()
 
   // Dialog handlers
@@ -70,6 +68,10 @@ app.whenReady().then(() => {
     })
     if (result.canceled) return null
     return result.filePaths[0]
+  })
+
+  ipcMain.handle('shell:open-external', async (_e, url: string) => {
+    await shell.openExternal(url)
   })
 
   createWindow()

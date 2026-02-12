@@ -70,13 +70,13 @@ const api = {
   export: {
     markdown: (reviewId: number) => ipcRenderer.invoke('export:markdown', reviewId),
     markdownToPath: (reviewId: number, exportPath: string) =>
-      ipcRenderer.invoke('export:markdown-to-path', reviewId, exportPath)
+      ipcRenderer.invoke('export:markdown-to-path', reviewId, exportPath),
+    markdownContent: (reviewId: number) => ipcRenderer.invoke('export:markdown-content', reviewId)
   },
 
-  // Webhook
-  webhook: {
-    send: (reviewId: number) => ipcRenderer.invoke('webhook:send', reviewId),
-    test: (url: string) => ipcRenderer.invoke('webhook:test', url)
+  // Shell
+  shell: {
+    openExternal: (url: string) => ipcRenderer.invoke('shell:open-external', url)
   },
 
   // Dialogs

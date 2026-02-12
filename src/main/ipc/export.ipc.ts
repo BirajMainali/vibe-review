@@ -41,9 +41,24 @@ export function registerExportIpc(): void {
     const comments = dbService.getCommentsByReview(reviewId)
     const markdown = generateMarkdown(project, review, comments)
 
-    const fileName = `review-${project.name}-${review.branch}-${new Date().toISOString().slice(0, 10)}.md`
+    const fileName = `review-${project.name}-${review.branch}-${Date.now()}.md`
     const fullPath = path.join(exportPath, fileName)
+    if (!fs.existsSync(exportPath)) {
+      fs.mkdirSync(exportPath, { recursive: true })
+    }
     fs.writeFileSync(fullPath, markdown, 'utf-8')
     return { success: true, path: fullPath }
   })
+
+  ipcMain.handle('export:markdown-content', async (_e, reviewId: number) => {
+    const review = dbService.getReviewById(reviewId)
+    if (!review) throw new Error('Review not found')
+
+    const project = dbService.getProjectById(review.project_id)
+    if (!project) throw new Error('Project not found')
+
+    const comments = dbService.getCommentsByReview(reviewId)
+    return generateMarkdown(project, review, comments)
+  })
+
 }
