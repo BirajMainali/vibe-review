@@ -7,6 +7,7 @@ const api = {
     diff: (repoPath: string) => ipcRenderer.invoke('git:diff', repoPath),
     diffStaged: (repoPath: string) => ipcRenderer.invoke('git:diff-staged', repoPath),
     diffFile: (repoPath: string, filePath: string) => ipcRenderer.invoke('git:diff-file', repoPath, filePath),
+    fullDiff: (repoPath: string) => ipcRenderer.invoke('git:full-diff', repoPath),
     stage: (repoPath: string, files: string[]) => ipcRenderer.invoke('git:stage', repoPath, files),
     unstage: (repoPath: string, files: string[]) => ipcRenderer.invoke('git:unstage', repoPath, files),
     stageAll: (repoPath: string) => ipcRenderer.invoke('git:stage-all', repoPath),

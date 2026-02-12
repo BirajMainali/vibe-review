@@ -18,6 +18,10 @@ export function registerGitIpc(): void {
     return gitService.getDiffFile(repoPath, filePath)
   })
 
+  ipcMain.handle('git:full-diff', async (_e, repoPath: string) => {
+    return gitService.getFullDiff(repoPath)
+  })
+
   ipcMain.handle('git:stage', async (_e, repoPath: string, files: string[]) => {
     await gitService.stageFiles(repoPath, files)
   })

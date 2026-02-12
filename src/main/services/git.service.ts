@@ -1,7 +1,34 @@
 import simpleGit, { SimpleGit } from 'simple-git'
+import { readFile } from 'fs/promises'
+import { join } from 'path'
 
 function getGit(repoPath: string): SimpleGit {
   return simpleGit(repoPath)
+}
+
+/**
+ * Generate a unified-diff representation for a brand-new (untracked) file so
+ * that diff2html can render it just like any other change.
+ */
+function generateNewFileDiff(filePath: string, content: string): string {
+  const lines = content.split('\n')
+  const hasTrailingNewline = content.endsWith('\n')
+  const codeLines = hasTrailingNewline ? lines.slice(0, -1) : lines
+  const lineCount = codeLines.length
+
+  const header = [
+    `diff --git a/${filePath} b/${filePath}`,
+    'new file mode 100644',
+    'index 0000000..0000000',
+    '--- /dev/null',
+    `+++ b/${filePath}`,
+    `@@ -0,0 +1,${lineCount} @@`
+  ]
+  const body = codeLines.map((line) => '+' + line)
+  if (!hasTrailingNewline && codeLines.length > 0) {
+    body.push('\\ No newline at end of file')
+  }
+  return [...header, ...body].join('\n')
 }
 
 export async function getStatus(repoPath: string) {
@@ -36,6 +63,49 @@ export async function getDiffStaged(repoPath: string): Promise<string> {
 
 export async function getDiffFile(repoPath: string, filePath: string): Promise<string> {
   return getGit(repoPath).diff(['--', filePath])
+}
+
+/**
+ * Return a comprehensive diff that covers every kind of change:
+ *   - staged modifications, deletions, and additions  (git diff --staged)
+ *   - unstaged modifications and deletions             (git diff)
+ *   - untracked (not-yet-added) files                  (synthetic diff)
+ *
+ * `git diff HEAD` combines staged + unstaged for tracked files.
+ * Untracked files are never included by git diff, so we read them
+ * from disk and produce a synthetic unified-diff block.
+ */
+export async function getFullDiff(repoPath: string): Promise<string> {
+  const git = getGit(repoPath)
+  const status = await git.status()
+
+  // git diff HEAD = working-tree vs last commit (staged + unstaged combined)
+  let trackedDiff = ''
+  try {
+    trackedDiff = await git.diff(['HEAD'])
+  } catch {
+    // HEAD may not exist yet (fresh repo, no commits) – fall back to staged diff
+    try {
+      trackedDiff = await git.diff(['--staged'])
+    } catch {
+      trackedDiff = ''
+    }
+  }
+
+  // Build synthetic diffs for untracked files
+  const untrackedFiles = status.not_added || []
+  const parts: string[] = [trackedDiff]
+
+  for (const filePath of untrackedFiles) {
+    try {
+      const content = await readFile(join(repoPath, filePath), 'utf-8')
+      parts.push(generateNewFileDiff(filePath, content))
+    } catch {
+      // Skip files that can't be read (binary, permissions, etc.)
+    }
+  }
+
+  return parts.filter(Boolean).join('\n')
 }
 
 export async function stageFiles(repoPath: string, files: string[]): Promise<void> {

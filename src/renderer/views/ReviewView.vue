@@ -28,15 +28,9 @@ const showRightPanel = ref(true)
 
 const projectId = computed(() => Number(route.params.projectId))
 
-// Show unstaged diff when present; otherwise show staged diff when we have staged files
+// Full diff covers all change types: modified, deleted, created (staged + unstaged + untracked)
 const effectiveDiff = computed(() => {
-  const unstaged = gitStore.diffOutput || ''
-  if (unstaged.trim()) return unstaged
-  const staged = gitStore.status?.staged?.length
-  if (staged && staged > 0 && gitStore.diffStagedOutput) {
-    return gitStore.diffStagedOutput
-  }
-  return ''
+  return gitStore.fullDiffOutput || ''
 })
 
 async function init() {
