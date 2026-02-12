@@ -10,8 +10,8 @@ const statusSummary = computed(() => {
   return {
     staged: s.staged?.length || 0,
     modified: s.modified?.length || 0,
-    untracked: s.not_added?.length || 0,
-    deleted: s.deleted?.length || 0
+    deleted: s.deleted?.length || 0,
+    untracked: s.not_added?.length || 0
   }
 })
 </script>
@@ -22,11 +22,15 @@ const statusSummary = computed(() => {
       <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>
       {{ statusSummary.staged }}
     </span>
-    <span v-if="statusSummary.modified > 0" class="inline-flex items-center gap-0.5 text-yellow-600 dark:text-yellow-400" title="Modified">
+    <span v-if="statusSummary.modified > 0" class="inline-flex items-center gap-0.5 text-amber-600 dark:text-amber-400" title="Changed">
       <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>
       {{ statusSummary.modified }}
     </span>
-    <span v-if="statusSummary.untracked > 0" class="inline-flex items-center gap-0.5 text-gray-500 dark:text-gray-400" title="Untracked">
+    <span v-if="statusSummary.deleted > 0" class="inline-flex items-center gap-0.5 text-rose-600 dark:text-rose-400" title="Removed">
+      <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>
+      {{ statusSummary.deleted }}
+    </span>
+    <span v-if="statusSummary.untracked > 0" class="inline-flex items-center gap-0.5 text-emerald-600 dark:text-emerald-400" title="New">
       <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 8 8"><circle cx="4" cy="4" r="3"/></svg>
       {{ statusSummary.untracked }}
     </span>

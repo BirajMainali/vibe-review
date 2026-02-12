@@ -22,22 +22,48 @@ const untrackedFiles = computed(() => gitStore.status?.not_added || [])
 const deletedFiles = computed(() => gitStore.status?.deleted || [])
 const createdFiles = computed(() => gitStore.status?.created || [])
 
-const allChangedFiles = computed(() => {
-  const files = gitStore.status?.files
-  if (files?.length) {
-    // Preserve git status row order (no sorting)
-    return files.map((f: { path: string }) => f.path)
+type FileCategory = 'modified' | 'removed' | 'added'
+
+const categorizedFiles = computed(() => {
+  const result: { modified: string[]; removed: string[]; added: string[] } = {
+    modified: [],
+    removed: [],
+    added: []
   }
   const seen = new Set<string>()
-  const result: string[] = []
-  for (const f of [...stagedFiles.value, ...modifiedFiles.value, ...untrackedFiles.value, ...deletedFiles.value, ...createdFiles.value]) {
-    if (!seen.has(f)) {
-      seen.add(f)
-      result.push(f)
+
+  const add = (file: string, cat: FileCategory) => {
+    if (!seen.has(file)) {
+      seen.add(file)
+      result[cat].push(file)
     }
   }
+
+  // Use status.files when available for proper categorization
+  const files = gitStore.status?.files
+  if (files?.length) {
+    for (const f of files) {
+      const path = f.path
+      const idx = (f as { index?: string }).index
+      const wdir = (f as { working_dir?: string }).working_dir
+      if (idx === 'D' || wdir === 'D') add(path, 'removed')
+      else if (idx === 'A' || wdir === '?' || createdFiles.value.includes(path) || untrackedFiles.value.includes(path)) add(path, 'added')
+      else add(path, 'modified')
+    }
+    return result
+  }
+
+  for (const f of deletedFiles.value) add(f, 'removed')
+  for (const f of [...createdFiles.value, ...untrackedFiles.value]) add(f, 'added')
+  for (const f of [...stagedFiles.value, ...modifiedFiles.value]) add(f, 'modified')
   return result
 })
+
+const allChangedFiles = computed(() => [
+  ...categorizedFiles.value.modified,
+  ...categorizedFiles.value.removed,
+  ...categorizedFiles.value.added
+])
 
 const allStaged = computed(() => {
   if (allChangedFiles.value.length === 0) return false
@@ -54,18 +80,27 @@ function isStaged(file: string) {
   return stagedFiles.value.includes(file)
 }
 
-function getStatusIcon(file: string) {
-  if (untrackedFiles.value.includes(file)) return 'U'
-  if (createdFiles.value.includes(file)) return 'A'
-  if (deletedFiles.value.includes(file)) return 'D'
-  return 'M'
+function getFileCategory(file: string): FileCategory {
+  if (deletedFiles.value.includes(file)) return 'removed'
+  if (createdFiles.value.includes(file) || untrackedFiles.value.includes(file)) return 'added'
+  return 'modified'
 }
 
-function getStatusColor(file: string) {
-  if (untrackedFiles.value.includes(file)) return 'text-gray-500'
-  if (createdFiles.value.includes(file)) return 'text-green-500'
-  if (deletedFiles.value.includes(file)) return 'text-red-500'
-  return 'text-yellow-500'
+const categoryLabels: Record<FileCategory, string> = {
+  modified: 'Changed',
+  removed: 'Removed',
+  added: 'New'
+}
+
+function getStatusLabel(file: string) {
+  return categoryLabels[getFileCategory(file)]
+}
+
+function getStatusBadgeClass(file: string) {
+  const cat = getFileCategory(file)
+  if (cat === 'added') return 'bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400'
+  if (cat === 'removed') return 'bg-rose-100 dark:bg-rose-900/30 text-rose-700 dark:text-rose-400'
+  return 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400'
 }
 
 async function toggleFile(file: string) {
@@ -147,32 +182,39 @@ async function generateCommitMessage() {
       <div v-if="allChangedFiles.length === 0" class="px-3 py-4 text-xs text-gray-400 dark:text-gray-500 text-center">
         No changed files
       </div>
-      <div
-        v-for="file in allChangedFiles"
-        :key="file"
-        class="flex items-center gap-2 px-3 py-1.5 group hover:bg-gray-100 dark:hover:bg-gray-800/50"
-      >
-        <input
-          type="checkbox"
-          :checked="isStaged(file)"
-          :disabled="gitStore.staging"
-          @click.stop
-          @change="toggleFile(file)"
-          class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500 flex-shrink-0"
-        />
-        <span
-          class="text-xs font-mono w-5 text-center flex-shrink-0"
-          :class="getStatusColor(file)"
-        >
-          {{ getStatusIcon(file) }}
-        </span>
-        <span
-          class="text-sm text-gray-700 dark:text-gray-300 truncate flex-1 min-w-0 cursor-default"
-          :title="file"
-        >
-          {{ file }}
-        </span>
-      </div>
+      <template v-else>
+        <section v-for="cat in (['modified', 'removed', 'added'] as const)" :key="cat" v-show="categorizedFiles[cat].length > 0">
+          <div class="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500">
+            {{ categoryLabels[cat] }}
+          </div>
+          <div
+            v-for="file in categorizedFiles[cat]"
+            :key="file"
+            class="flex items-center gap-2 px-3 py-1.5 group hover:bg-gray-100 dark:hover:bg-gray-800/50"
+          >
+            <input
+              type="checkbox"
+              :checked="isStaged(file)"
+              :disabled="gitStore.staging"
+              @click.stop
+              @change="toggleFile(file)"
+              class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500 flex-shrink-0"
+            />
+            <span
+              class="inline-flex shrink-0 px-1.5 py-0.5 text-[10px] font-medium rounded"
+              :class="getStatusBadgeClass(file)"
+            >
+              {{ getStatusLabel(file) }}
+            </span>
+            <span
+              class="text-sm text-gray-700 dark:text-gray-300 truncate flex-1 min-w-0 cursor-default"
+              :title="file"
+            >
+              {{ file }}
+            </span>
+          </div>
+        </section>
+      </template>
     </div>
 
     <!-- Commit at bottom -->
