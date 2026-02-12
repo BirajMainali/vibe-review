@@ -2,12 +2,27 @@
   "name": "vibe-review",
   "version": "1.0.0",
   "description": "Vibe Review - Local code review desktop application",
+  "author": "BirajMainali",
+  "license": "MIT",
+  "homepage": "https://github.com/BirajMainali/vibe-review",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/BirajMainali/vibe-review.git"
+  },
   "main": "./out/main/index.js",
   "scripts": {
     "dev": "electron-vite dev",
     "build": "electron-vite build",
     "preview": "electron-vite preview",
-    "postinstall": "electron-builder install-app-deps"
+    "postinstall": "electron-builder install-app-deps",
+    "build:linux": "electron-vite build && electron-builder --linux --publish never",
+    "build:mac": "electron-vite build && electron-builder --mac --publish never",
+    "build:win": "electron-vite build && electron-builder --win --publish never",
+    "build:all": "electron-vite build && electron-builder --linux --mac --win --publish never",
+    "release": "electron-vite build && electron-builder --publish always",
+    "release:linux": "electron-vite build && electron-builder --linux --publish always",
+    "release:mac": "electron-vite build && electron-builder --mac --publish always",
+    "release:win": "electron-vite build && electron-builder --win --publish always"
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.2",
